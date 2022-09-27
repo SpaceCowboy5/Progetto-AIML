@@ -1,4 +1,5 @@
 # import delle librerie
+
 import numpy as np  # linear algebra
 import pandas as pd  # data processing, CSV file I/O (e.g. pd.read_csv)
 import datetime
@@ -18,6 +19,8 @@ from IPython.display import HTML, display
 
 pd.set_option('display.max_columns', None)  # viene usato per mostrare completamente le colonne nel dataset
 
+
+# pd.set_option('display.max_rows', None) # viene usato per mostrare completamente le righe nel dataset
 
 def progress(value, max=100):
     return HTML("""
@@ -41,8 +44,9 @@ user_data = pd.read_csv("CODICE PAPER+DATASET/user_data_final.csv")
 # user_data.rename(columns={'user_id': 'user'}, inplace=True)
 # user_data.to_csv('CODICE PAPER+DATASET/user_data_final.csv', index=False)
 
-# non so se corretto
+# inserisco triple_id in user_data
 user_data.insert(0, 'triple_id', range(0, 0 + len(user_data)))
+print(song_data.head())
 print(user_data.head())
 
 # tolgo dalle canzoni totali quelle senza dati di ascolto (0 listenings)
@@ -67,7 +71,7 @@ song_data = song_data[song_data["song_id"].isin(listened_songs)]
 #     x = x.sample(frac=1)
 #     train_set = x.head(int(round(len(x) * (0.8))))
 #     train_set.apply(lambda y: add_to_dict(y["triple_id"], "train"), axis=1)
-#    test_set = x.tail(int(round(len(x) * (0.2))))
+#     test_set = x.tail(int(round(len(x) * (0.2))))
 #     test_set.apply(lambda y: add_to_dict(y["triple_id"], "test"), axis=1)
 
 
@@ -89,6 +93,12 @@ user_data = pd.concat([train_set, test_set])
 
 print(user_data.head())
 print(user_data.tail())
+
+# modifico artist_mbdtags
+# song_data["artist_mbtags"] = song_data["artist_mbtags"].fillna("[]")
+# song_data.to_csv('songs_final.csv', index=False)
+
+print(song_data["artist_mbtags"].head(20))
 
 # user_data_total conterrà tutte le righe di training e test
 user_data_total = user_data
@@ -140,6 +150,7 @@ tag_dict = {}
 
 # DA CAPIRE
 def add_tag_edges(tag_song_row):
+    # print(tag_song_row)
     tags = eval(tag_song_row[1])
     for tag in tags:
         if tag_dict.get(tag) == None:
@@ -149,16 +160,16 @@ def add_tag_edges(tag_song_row):
         tag_dict[tag]["songs"].append(tag_song_row[0])
 
 
+# print(song_data[["song_id", "artist_mbtags"]].head(742))
+# print(song_data.dtypes)
 song_data[["song_id", "artist_mbtags"]].apply(add_tag_edges, axis=1)
 
-print(tag_dict["emo"])
+print(tag_dict["black metal"])
 
 # dict with hyperedges
 
 hyperedges = {}
 
-
-# %%
 
 # hyperedge users
 
@@ -201,14 +212,10 @@ for tag in tag_dict:
     hyperedges[tag_id]['members'].append(tag_id)
     hyperedges[tag_id]['category'] = 'tag'
 
-# %%
-
-print(hyperedges['u_30'])
-print(hyperedges['r_30'])
-print(hyperedges['a_2'])
-print(hyperedges['t_300'])
-
-# %%
+# print(hyperedges['u_20'])
+# print(hyperedges['r_30'])
+# print(hyperedges['a_2'])
+print(hyperedges['t_70'])
 
 # compute hyperedges max_size e min_size
 
@@ -224,8 +231,6 @@ for h_index in hyperedges:
 
 print(min_size, max_size)
 
-# %%
-
 # count hyperedge number per category
 
 cat_amounts = {}
@@ -238,29 +243,25 @@ for h in hyperedges:
 
 print(cat_amounts)
 
-# %%
-
 # plot hyperedges distribution
 
-pd_df = pd.DataFrame(list(cat_amounts.items()))
-pd_df.columns = ["Dim", "Count"]
+# pd_df = pd.DataFrame(list(cat_amounts.items()))
+# pd_df.columns = ["Dim", "Count"]
 # sort df by Count column
-pd_df = pd_df.sort_values(['Count']).reset_index(drop=True)
+# pd_df = pd_df.sort_values(['Count']).reset_index(drop=True)
 
-plt.figure(figsize=(12, 8))
+# plt.figure(figsize=(12, 8))
 # plot barh chart with index as x values
-ax = sns.barplot(pd_df.index, pd_df.Count)
-ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
-ax.set(xlabel="Hyperedge category", ylabel='Count')
+# ax = sns.barplot(pd_df.index, pd_df.Count)
+# ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
+# ax.set(xlabel="Hyperedge category", ylabel='Count')
 # add proper Dim values as x labels
-ax.set_xticklabels(pd_df.Dim)
-for item in ax.get_xticklabels(): item.set_rotation(90)
-for i, v in enumerate(pd_df["Count"].iteritems()):
-    ax.text(i, v[1], "{:,}".format(v[1]), color='m', va='bottom', rotation=45)
-plt.tight_layout()
-plt.show()
-
-# %%
+# ax.set_xticklabels(pd_df.Dim)
+# for item in ax.get_xticklabels(): item.set_rotation(90)
+# for i, v in enumerate(pd_df["Count"].iteritems()):
+#  ax.text(i, v[1], "{:,}".format(v[1]), color='m', va='bottom', rotation=45)
+# plt.tight_layout()
+# plt.show()
 
 # for each node, get hyperedges
 
@@ -278,34 +279,26 @@ for h_index in hyperedges:
 
 print(vertexMemberships['SOZOBWN12A8C130999'])
 
-# %%
-
 # save hyperedges and nodes
 
 print("Salvataggio dati hyperedge e nodi...\n")
 
 print("Numero di hyperedge: " + str(len(hyperedges)))
-pickle.dump(hyperedges, open('drive/MyDrive/TESI MIRKO/hyperedges.p', 'wb'))
+pickle.dump(hyperedges, open('CODICE PAPER+DATASET/hyperedges.p', 'wb'))
 print("hyperedges.p salvato.\n")
 
 print("Numero di nodi: " + str(len(vertexMemberships)))
-pickle.dump(vertexMemberships, open('drive/MyDrive/TESI MIRKO/vertexMemberships.p', 'wb'))
+pickle.dump(vertexMemberships, open('CODICE PAPER+DATASET/vertexMemberships.p', 'wb'))
 print("vertexMemberships.p salvato.\n")
 
 print("Salvataggio dati hyperedge e nodi completato.")
 
-# %%
-
-hyperedges = pickle.load(open('drive/MyDrive/TESI MIRKO/hyperedges.p', 'rb'))
-vertexMemberships = pickle.load(open('drive/MyDrive/TESI MIRKO/vertexMemberships.p', 'rb'))
-
-# %% md
+hyperedges = pickle.load(open('CODICE PAPER+DATASET/hyperedges.p', 'rb'))
+vertexMemberships = pickle.load(open('CODICE PAPER+DATASET/vertexMemberships.p', 'rb'))
 
 # Compute random walks (SaT e TaS)
 print("CALCOLA RANDOM WALKS")
 
-
-# %%
 
 #  SubsampleAndTraverse: definisce random walk tra vertici
 def SubsampleAndTraverse(length, num_walks, hyperedges, vertexMemberships, alpha=1., beta=0):
@@ -335,37 +328,32 @@ def SubsampleAndTraverse(length, num_walks, hyperedges, vertexMemberships, alpha
     return walksSAT
 
 
-# %%
-
 walksSAT = SubsampleAndTraverse(length=100, num_walks=10, hyperedges=hyperedges, vertexMemberships=vertexMemberships,
                                 alpha=1, beta=0)
+#pickle.dump(walksSAT, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
 # walksSAT = pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'rb'))
-
-# %%
 
 delta = int(10603110 / 50)
 for i in range(0, 10603110, delta):
     print(i)
     if i + delta < 10603110:
         filename = "walksSAT-" + str(i) + "-" + str(i + delta)
-        pickle.dump(walksSAT[i: i + delta], open("drive/MyDrive/TESI MIRKO/walksSAT/" + filename, "wb"))
+        pickle.dump(walksSAT[i: i + delta], open("CODICE PAPER+DATASET/walksSAT/" + filename, "wb"))
     else:
         filename = "walksSAT-" + str(i) + "-" + str(10603110)
-        pickle.dump(walksSAT[i:], open("drive/MyDrive/TESI MIRKO/walksSAT/" + filename, "wb"))
-
-# %%
+        pickle.dump(walksSAT[i:], open("CODICE PAPER+DATASET/walksSAT/" + filename, "wb"))
 
 import os
 import json
 import pickle
 
-prova = os.listdir('drive/MyDrive/TESI MIRKO/walksSAT')[1]
+prova = os.listdir('CODICE PAPER+DATASET/walksSAT')[1]
 
-f = open('drive/MyDrive/TESI MIRKO/walksSAT/' + prova, 'rb')
+f = open('CODICE PAPER+DATASET/walksSAT/' + prova, 'rb')
 lista = pickle.load(f)
 f.close()
 
-f = open("drive/MyDrive/TESI MIRKO/walksSAT/prova.json", 'w')
+f = open("CODICE PAPER+DATASET/walksSAT/prova.json", 'w')
 json.dump(lista, f)
 f.close()
 
@@ -373,45 +361,39 @@ import os
 import gc
 
 walksSAT = []
-for f in os.listdir('drive/MyDrive/TESI MIRKO/walksSAT'):
-    pikd = open('drive/MyDrive/TESI MIRKO/walksSAT/' + f, 'rb')
+for f in os.listdir('CODICE PAPER+DATASET/walksSAT'):
+    pikd = open('CODICE PAPER+DATASET/walksSAT/' + f, 'rb')
     for el in pickle.load(pikd):
         walksSAT.append(el)
     pikd.close()
 
-# %%
-
 import os
 
 walksSAT = []
-for ws in os.listdir('drive/MyDrive/TESI MIRKO/walksSAT'):
-    walksSAT.append(pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT/' + ws, 'rb')))
-
-# %%
+for ws in os.listdir('CODICE PAPER+DATASET/walksSAT'):
+    walksSAT.append(pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + ws, 'rb')))
 
 # salvataggio dati SaT
 print("Salvataggio dati SaT...")
-pickle.dump(walksSAT, open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'wb'))
+pickle.dump(walksSAT, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
 print("walksSAT.p salvato.\n")
-
-# %%
 
 import os
 import pickle
 
-files = os.listdir('drive/MyDrive/TESI MIRKO/walksSAT')
+files = os.listdir('CODICE PAPER+DATASET/walksSAT')
 
-aggregated = pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT/' + files[0], 'rb'))
-pickle.dump(aggregated, open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'wb'))
-os.remove('drive/MyDrive/TESI MIRKO/walksSAT/' + files[0])
+aggregated = pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + files[0], 'rb'))
+pickle.dump(aggregated, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
+os.remove('CODICE PAPER+DATASET/walksSAT/' + files[0])
 
 for f in files[1:]:
     print(f)
     # aggregated = pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'rb'))
-    for el in pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT/' + f, 'rb')):
+    for el in pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + f, 'rb')):
         aggregated.append(el)
-    pickle.dump(aggregated, open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'wb'))
-    os.remove('drive/MyDrive/TESI MIRKO/walksSAT/' + f)
+    pickle.dump(aggregated, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
+    os.remove('CODICE PAPER+DATASET/walksSAT/' + f)
 
 # Generate context embeddings
 
@@ -447,34 +429,26 @@ print("Vertex embeddings completati. ( " + str(len(vertex_embeddings)) + " embed
 print("Context embedding per nodo  " + vertex_ids[0] + ":")
 print(vertex_embeddings[0])
 
-# %%
-
 context_embeddings = dict(zip(vertex_ids, vertex_embeddings))
 print(context_embeddings['SOAUWYT12A81C206F1'])
 
-# %%
 
 # salvataggio vertex embeddings
 print("Salvataggio context embeddings...")
-pickle.dump(context_embeddings, open('drive/MyDrive/TESI MIRKO/context_embeddings.p', 'wb'))
+pickle.dump(context_embeddings, open('CODICE PAPER+DATASET/context_embeddings.p', 'wb'))
 print("context_embeddings.p salvato.\n")
 
-# %% md
+
 
 # Mood detection (compute arousal e valence per user)
-
-# %%
 
 # get arousal e valence foreach song listened by each user_id
 
 user_data["arousal"] = user_data.merge(song_data, on="song_id", how="left").set_index("triple_id")["arousal"]
 user_data["valence"] = user_data.merge(song_data, on="song_id", how="left").set_index("triple_id")["valence"]
 
-# %%
 
 print(user_data[user_data["user_id"] == "u_60"])
-
-# %%
 
 # compute arousal e valence for each user as average of each listend song (weighted on play_count)
 
@@ -488,11 +462,7 @@ user_mood["valence"] = user_mood["weighted_valence"] / user_mood["play_count"]
 
 print(user_mood)
 
-# %%
-
 print(user_mood[user_mood['user_id'] == 'u_0'][['user_id', 'arousal', 'valence']])
-
-# %%
 
 # load max per feature of each song of each user for max pooling
 
@@ -500,11 +470,10 @@ user_max = user_data.groupby('user_id').agg({'arousal': 'max', 'valence': 'max'}
 user_mood["arousal"] = user_mood["arousal"] + user_max["arousal"]
 user_mood["valence"] = user_mood["valence"] + user_max["valence"]
 
-# %%
+
 
 user_mood.head()
 
-# %%
 
 # compute dict with valence and arousal of song and user
 
@@ -522,15 +491,14 @@ user_mood[["user_id", "valence", "arousal"]].progress_apply(generate_arousal_val
 
 song_data[["song_id", "valence", "arousal"]].progress_apply(generate_arousal_valence_dict, axis=1)
 
-# %%
 
 # sove valence e arousal
 print("Salvataggio valence e arousal...")
-pickle.dump(arousal_valence_dict, open('arousal_valence_dict.p', 'wb'))
+pickle.dump(arousal_valence_dict, open('CODICE PAPER+DATASET/arousal_valence_dict.p', 'wb'))
 print("arousal_valence_dict.p salvato.\n")
 
 
-# COncatenate features
+# Concatenate features
 
 def generate_embeddings(row, e_dict):
     embedding = np.concatenate((context_embeddings[row[0]], content_embeddings[row[0]]))
