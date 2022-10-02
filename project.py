@@ -239,7 +239,7 @@ for h in hyperedges:
     if hyperedges[h]["category"] not in cat_amounts:
         cat_amounts[hyperedges[h]["category"]] = 1
     else:
-        cat_amounts[hyperedges[h]["category"]] += 1
+        cat_amounts[hyperedges[h]["category"]] = 1
 
 print(cat_amounts)
 
@@ -264,7 +264,6 @@ print(cat_amounts)
 # plt.show()
 
 # for each node, get hyperedges
-
 vertexMemberships = {}
 for h_index in hyperedges:
     hyperedge = hyperedges[h_index]
@@ -330,70 +329,70 @@ def SubsampleAndTraverse(length, num_walks, hyperedges, vertexMemberships, alpha
 
 walksSAT = SubsampleAndTraverse(length=100, num_walks=10, hyperedges=hyperedges, vertexMemberships=vertexMemberships,
                                 alpha=1, beta=0)
-#pickle.dump(walksSAT, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
+#walksSAT = pickle.dump(walksSAT, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
 # walksSAT = pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'rb'))
+walksSAT = pickle.load(open('CODICE PAPER+DATASET/walksSAT.p', 'rb'))
+# delta = int(10603110 / 50)
+# for i in range(0, 10603110, delta):
+# print(i)
+# if i + delta < 10603110:
+#     filename = "walksSAT-" + str(i) + "-" + str(i + delta)
+#     pickle.dump(walksSAT[i: i + delta], open("CODICE PAPER+DATASET/walksSAT/" + filename, "wb"))
+# else:
+#     filename = "walksSAT-" + str(i) + "-" + str(10603110)
+#     pickle.dump(walksSAT[i:], open("CODICE PAPER+DATASET/walksSAT/" + filename, "wb"))
 
-delta = int(10603110 / 50)
-for i in range(0, 10603110, delta):
-    print(i)
-    if i + delta < 10603110:
-        filename = "walksSAT-" + str(i) + "-" + str(i + delta)
-        pickle.dump(walksSAT[i: i + delta], open("CODICE PAPER+DATASET/walksSAT/" + filename, "wb"))
-    else:
-        filename = "walksSAT-" + str(i) + "-" + str(10603110)
-        pickle.dump(walksSAT[i:], open("CODICE PAPER+DATASET/walksSAT/" + filename, "wb"))
+# import os
+# import json
+# import pickle
 
-import os
-import json
-import pickle
+# prova = os.listdir('CODICE PAPER+DATASET/walksSAT')[1]
 
-prova = os.listdir('CODICE PAPER+DATASET/walksSAT')[1]
+# f = open('CODICE PAPER+DATASET/walksSAT/' + prova, 'rb')
+# lista = pickle.load(f)
+# f.close()
 
-f = open('CODICE PAPER+DATASET/walksSAT/' + prova, 'rb')
-lista = pickle.load(f)
-f.close()
+# f = open("CODICE PAPER+DATASET/walksSAT/prova.json", 'w')
+# json.dump(lista, f)
+# f.close()
 
-f = open("CODICE PAPER+DATASET/walksSAT/prova.json", 'w')
-json.dump(lista, f)
-f.close()
+# import os
+# import gc
 
-import os
-import gc
+# walksSAT = []
+# for f in os.listdir('CODICE PAPER+DATASET/walksSAT'):
+#  pikd = open('CODICE PAPER+DATASET/walksSAT/' + f, 'rb')
+# for el in pickle.load(pikd):
+#      walksSAT.append(el)
+#  pikd.close()
 
-walksSAT = []
-for f in os.listdir('CODICE PAPER+DATASET/walksSAT'):
-    pikd = open('CODICE PAPER+DATASET/walksSAT/' + f, 'rb')
-    for el in pickle.load(pikd):
-        walksSAT.append(el)
-    pikd.close()
+# import os
 
-import os
-
-walksSAT = []
-for ws in os.listdir('CODICE PAPER+DATASET/walksSAT'):
-    walksSAT.append(pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + ws, 'rb')))
+# walksSAT = []
+# for ws in os.listdir('CODICE PAPER+DATASET/walksSAT'):
+#   walksSAT.append(pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + ws, 'rb')))
 
 # salvataggio dati SaT
-print("Salvataggio dati SaT...")
-pickle.dump(walksSAT, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
-print("walksSAT.p salvato.\n")
+# print("Salvataggio dati SaT...")
+# pickle.dump(walksSAT, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
+# print("walksSAT.p salvato.\n")
 
-import os
-import pickle
+# import os
+# import pickle
 
-files = os.listdir('CODICE PAPER+DATASET/walksSAT')
+# files = os.listdir('CODICE PAPER+DATASET/walksSAT')
 
-aggregated = pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + files[0], 'rb'))
-pickle.dump(aggregated, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
-os.remove('CODICE PAPER+DATASET/walksSAT/' + files[0])
+# aggregated = pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + files[0], 'rb'))
+# pickle.dump(aggregated, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
+# os.remove('CODICE PAPER+DATASET/walksSAT/' + files[0])
 
-for f in files[1:]:
-    print(f)
-    # aggregated = pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'rb'))
-    for el in pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + f, 'rb')):
-        aggregated.append(el)
-    pickle.dump(aggregated, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
-    os.remove('CODICE PAPER+DATASET/walksSAT/' + f)
+# for f in files[1:]:
+# print(f)
+# aggregated = pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'rb'))
+# for el in pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + f, 'rb')):
+#      aggregated.append(el)
+#  pickle.dump(aggregated, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
+#  os.remove('CODICE PAPER+DATASET/walksSAT/' + f)
 
 # Generate context embeddings
 
@@ -406,7 +405,7 @@ import time as time
 def EmbedWord2Vec(walks, dimension):
     time_start = time.time()
     print("Creating embeddings.")
-    model = Word2Vec(walks, size=dimension, window=5, min_count=0, sg=1, workers=16, iter=20)
+    model = Word2Vec(walks, vector_size=dimension, window=5, min_count=0, sg=1, workers=16, epochs=20)
     node_ids = model.wv.index2word
     node_embeddings = model.wv.vectors
     print("Embedding generation runtime: ", time.time() - time_start)
@@ -432,13 +431,10 @@ print(vertex_embeddings[0])
 context_embeddings = dict(zip(vertex_ids, vertex_embeddings))
 print(context_embeddings['SOAUWYT12A81C206F1'])
 
-
 # salvataggio vertex embeddings
 print("Salvataggio context embeddings...")
 pickle.dump(context_embeddings, open('CODICE PAPER+DATASET/context_embeddings.p', 'wb'))
 print("context_embeddings.p salvato.\n")
-
-
 
 # Mood detection (compute arousal e valence per user)
 
@@ -446,7 +442,6 @@ print("context_embeddings.p salvato.\n")
 
 user_data["arousal"] = user_data.merge(song_data, on="song_id", how="left").set_index("triple_id")["arousal"]
 user_data["valence"] = user_data.merge(song_data, on="song_id", how="left").set_index("triple_id")["valence"]
-
 
 print(user_data[user_data["user_id"] == "u_60"])
 
@@ -470,10 +465,7 @@ user_max = user_data.groupby('user_id').agg({'arousal': 'max', 'valence': 'max'}
 user_mood["arousal"] = user_mood["arousal"] + user_max["arousal"]
 user_mood["valence"] = user_mood["valence"] + user_max["valence"]
 
-
-
 user_mood.head()
-
 
 # compute dict with valence and arousal of song and user
 
@@ -490,7 +482,6 @@ def generate_arousal_valence_dict(row):
 user_mood[["user_id", "valence", "arousal"]].progress_apply(generate_arousal_valence_dict, axis=1)
 
 song_data[["song_id", "valence", "arousal"]].progress_apply(generate_arousal_valence_dict, axis=1)
-
 
 # sove valence e arousal
 print("Salvataggio valence e arousal...")
@@ -561,11 +552,8 @@ print("Salvataggio user embeddings...")
 pickle.dump(user_embeddings, open('user_embeddings_zscore.p', 'wb'))
 print("user_embeddings_zscore.p salvato.\n")
 
-# %% md
-
 # Recommendation system (distanza coseno pesata)
 
-# %%
 
 from numpy import dot
 from numpy.linalg import norm
@@ -575,16 +563,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 pd.options.display.max_rows = None
 
 
-# %%
-
 # cos sim
 
 def cos_sim(a, b, w):
     return 1 - spatial.distance.cosine(a, b, w)
     # return dot(a, b)/(norm(a)*norm(b))
 
-
-# %%
 
 # weights vector
 w_1 = np.full(16, 1 / (16 * 3))  # peso context-embedding
@@ -603,14 +587,10 @@ w_content = np.concatenate((np.zeros(16), np.ones(50), np.zeros(2)), axis=None)
 # vettore peso w_av (solo context-based)
 w_av = np.concatenate((np.zeros(16), np.zeros(25), np.ones(2)), axis=None)
 
-# %%
-
 w_1_mix = np.full(16, 5 / (16 * 3))  # peso context-embedding
 w_2_mix = np.full(100, 1 / (50 * 3))  # peso content-embedding
 w_3_mix = np.full(2, 0 / (2 * 3))  # peso arousal e valence
 w_mix = np.concatenate((w_1_mix, w_2_mix, w_3_mix), axis=None)
-
-# %%
 
 # remove 0 lisetnings
 
@@ -621,8 +601,6 @@ song_data_listened = song_data[song_data["song_id"].isin(listened_songs)].reset_
 song_data_listened["id"] = song_data_listened.index
 user_data_total["song_matrix_id"] = \
     user_data_total.merge(song_data_listened, left_on="song_id", right_on="song_id", how="left")["id"]
-
-# %%
 
 # caricamento dati set (per utenti su cui fare la predizione)
 
@@ -645,7 +623,6 @@ users_training_songs = user_training.groupby('user_id_matrix')['song_matrix_id']
 # print(user_test)
 # print(users_test_songs)
 
-# %%
 
 # compute matrix user/song test set
 users_test_matrix = users_test_songs['songs'].tolist()
@@ -673,8 +650,6 @@ for row in range(len(users_train_matrix)):
 
 users_train_matrix = matrix
 
-# %%
-
 # user_embeddings_to_array
 user_hyperedges['embedding'] = user_hyperedges.user_id.map(user_embeddings)
 users_test_songs['user_embedding'] = users_test_songs.merge(user_hyperedges, on="user_id_matrix", how="left")[
@@ -682,15 +657,11 @@ users_test_songs['user_embedding'] = users_test_songs.merge(user_hyperedges, on=
 user_embeddings_array = users_test_songs['user_embedding'].tolist()
 user_embeddings_array = np.array(user_embeddings_array)
 
-# %%
-
 # song_embeddings to array
 song_data_listened['embedding'] = song_data_listened.song_id.map(song_embeddings)
 song_embeddings_array = song_data_listened['embedding'].tolist()
 song_embeddings_array = np.array(song_embeddings_array)
 
-
-# %%
 
 # compute scores and top-k prediction for each user
 
@@ -747,19 +718,13 @@ print(str(datetime.datetime.now()) + " - Fine")
 user_id = random.randint(0, users_predictions.shape[0] - 1)
 print(user_id)
 
-# %%
-
 # canzoni ascoltate dall'utente
 song_data_listened[song_data_listened.id.isin(users_train_matrix.rows[user_id])]
-
-# %%
 
 # top 100 consigli per l'utente
 predictions_df = pd.DataFrame({'id': users_predictions[user_id]})
 predictions_df["rank"] = predictions_df.index + 1
 predictions_df.merge(song_data_listened, on='id', how='left').set_index('rank')
-
-# %%
 
 # canzoni del test set dell'utente
 song_data_listened[song_data_listened['id'].isin(users_test_matrix.rows[user_id])]
@@ -788,11 +753,7 @@ def AP(songs_test, top_songs):
     return score / min(len(songs_test), len(top_songs))
 
 
-# %%
-
 users_test_matrix.shape
-
-# %%
 
 # compute recall and AP @100/50/20/10/5
 print(str(datetime.datetime.now()) + " - Start evaluation")
