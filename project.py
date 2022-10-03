@@ -35,8 +35,9 @@ def progress(value, max=100):
 
 
 # CSV Loading
-startreading = time.time()
 print("CARICAMENTO DATASET")
+startreading = time.time()
+
 song_data = pd.read_csv("CODICE PAPER+DATASET/songs_final.csv")
 user_data = pd.read_csv("CODICE PAPER+DATASET/user_data_final.csv")
 
@@ -116,6 +117,7 @@ print("Tempo necessario per la lettura dei datasets: " + str(endreading - startr
 
 # dataframe with listened songs
 print("CREAZIONE IPERGRAFO")
+startreading = time.time()
 user_hyperedges = user_data.groupby('user')['song_id'].apply(list).reset_index(name='songs')
 user_hyperedges["user_id"] = "u_ " + (user_hyperedges.index.map(str))
 user_hyperedges["user_id_matrix"] = user_hyperedges.index
@@ -283,20 +285,24 @@ print(vertexMemberships['SOZOBWN12A8C130999'])
 print("Salvataggio dati hyperedge e nodi...\n")
 
 print("Numero di hyperedge: " + str(len(hyperedges)))
-pickle.dump(hyperedges, open('CODICE PAPER+DATASET/hyperedges.p', 'wb'))
-print("hyperedges.p salvato.\n")
+# pickle.dump(hyperedges, open('CODICE PAPER+DATASET/hyperedges.p', 'wb'))
+# print("hyperedges.p salvato.\n")
 
 print("Numero di nodi: " + str(len(vertexMemberships)))
-pickle.dump(vertexMemberships, open('CODICE PAPER+DATASET/vertexMemberships.p', 'wb'))
-print("vertexMemberships.p salvato.\n")
+# pickle.dump(vertexMemberships, open('CODICE PAPER+DATASET/vertexMemberships.p', 'wb'))
+# print("vertexMemberships.p salvato.\n")
 
-print("Salvataggio dati hyperedge e nodi completato.")
+# print("Salvataggio dati hyperedge e nodi completato.")
 
 hyperedges = pickle.load(open('CODICE PAPER+DATASET/hyperedges.p', 'rb'))
 vertexMemberships = pickle.load(open('CODICE PAPER+DATASET/vertexMemberships.p', 'rb'))
+endreading = time.time()
+print("Tempo necessario per la creazione/salvataggio hyperedges: " + str(endreading - startreading) + " s")
 
 # Compute random walks (SaT e TaS)
 print("CALCOLA RANDOM WALKS")
+
+startreading = time.time()
 
 
 #  SubsampleAndTraverse: definisce random walk tra vertici
@@ -329,76 +335,77 @@ def SubsampleAndTraverse(length, num_walks, hyperedges, vertexMemberships, alpha
 
 walksSAT = SubsampleAndTraverse(length=100, num_walks=10, hyperedges=hyperedges, vertexMemberships=vertexMemberships,
                                 alpha=1, beta=0)
-#walksSAT = pickle.dump(walksSAT, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
-# walksSAT = pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'rb'))
-walksSAT = pickle.load(open('CODICE PAPER+DATASET/walksSAT.p', 'rb'))
-# delta = int(10603110 / 50)
-# for i in range(0, 10603110, delta):
-# print(i)
-# if i + delta < 10603110:
-#     filename = "walksSAT-" + str(i) + "-" + str(i + delta)
-#     pickle.dump(walksSAT[i: i + delta], open("CODICE PAPER+DATASET/walksSAT/" + filename, "wb"))
-# else:
-#     filename = "walksSAT-" + str(i) + "-" + str(10603110)
-#     pickle.dump(walksSAT[i:], open("CODICE PAPER+DATASET/walksSAT/" + filename, "wb"))
+endreading = time.time()
+print("Tempo necessario per la creazione dei random walk': " + str(endreading - startreading) + " s")
+# walksSAT = pickle.dump(walksSAT, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
+# walksSAT = pickle.load(open('CODICE PAPER+DATASET/walksSAT.p', 'rb'))
 
-# import os
-# import json
-# import pickle
 
-# prova = os.listdir('CODICE PAPER+DATASET/walksSAT')[1]
+delta = int(10603110 / 50)
+for i in range(0, 10603110, delta):
+    print(i)
+    if i + delta < 10603110:
+        filename = "walksSAT-" + str(i) + "-" + str(i + delta)
+        pickle.dump(walksSAT[i: i + delta], open("CODICE PAPER+DATASET/walksSAT/" + filename, "wb"))
+    else:
+        filename = "walksSAT-" + str(i) + "-" + str(10603110)
+        pickle.dump(walksSAT[i:], open("CODICE PAPER+DATASET/walksSAT/" + filename, "wb"))
 
-# f = open('CODICE PAPER+DATASET/walksSAT/' + prova, 'rb')
-# lista = pickle.load(f)
-# f.close()
+import os
+import json
+import pickle
 
-# f = open("CODICE PAPER+DATASET/walksSAT/prova.json", 'w')
-# json.dump(lista, f)
-# f.close()
+prova = os.listdir('CODICE PAPER+DATASET/walksSAT')[1]
 
-# import os
-# import gc
+f = open('CODICE PAPER+DATASET/walksSAT/' + prova, 'rb')
+lista = pickle.load(f)
+f.close()
 
-# walksSAT = []
-# for f in os.listdir('CODICE PAPER+DATASET/walksSAT'):
-#  pikd = open('CODICE PAPER+DATASET/walksSAT/' + f, 'rb')
-# for el in pickle.load(pikd):
-#      walksSAT.append(el)
-#  pikd.close()
+f = open("CODICE PAPER+DATASET/walksSAT/prova.json", 'w')
+json.dump(lista, f)
+f.close()
 
-# import os
+import os
+import gc
 
-# walksSAT = []
-# for ws in os.listdir('CODICE PAPER+DATASET/walksSAT'):
-#   walksSAT.append(pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + ws, 'rb')))
+walksSAT = []
+for f in os.listdir('CODICE PAPER+DATASET/walksSAT'):
+    pikd = open('CODICE PAPER+DATASET/walksSAT/' + f, 'rb')
+    for el in pickle.load(pikd):
+        walksSAT.append(el)
+    pikd.close()
+
+import os
+
+walksSAT = []
+for ws in os.listdir('CODICE PAPER+DATASET/walksSAT'):
+    walksSAT.append(pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + ws, 'rb')))
 
 # salvataggio dati SaT
-# print("Salvataggio dati SaT...")
-# pickle.dump(walksSAT, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
-# print("walksSAT.p salvato.\n")
+print("Salvataggio dati SaT...")
+pickle.dump(walksSAT, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
+print("walksSAT.p salvato.\n")
 
-# import os
-# import pickle
+import os
+import pickle
 
-# files = os.listdir('CODICE PAPER+DATASET/walksSAT')
+files = os.listdir('CODICE PAPER+DATASET/walksSAT')
 
-# aggregated = pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + files[0], 'rb'))
-# pickle.dump(aggregated, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
-# os.remove('CODICE PAPER+DATASET/walksSAT/' + files[0])
+aggregated = pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + files[0], 'rb'))
+pickle.dump(aggregated, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
+os.remove('CODICE PAPER+DATASET/walksSAT/' + files[0])
 
-# for f in files[1:]:
-# print(f)
-# aggregated = pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'rb'))
-# for el in pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + f, 'rb')):
-#      aggregated.append(el)
-#  pickle.dump(aggregated, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
-#  os.remove('CODICE PAPER+DATASET/walksSAT/' + f)
+for f in files[1:]:
+    print(f)
+    # aggregated = pickle.load(open('drive/MyDrive/TESI MIRKO/walksSAT.p', 'rb'))
+    for el in pickle.load(open('CODICE PAPER+DATASET/walksSAT/' + f, 'rb')):
+        aggregated.append(el)
+    pickle.dump(aggregated, open('CODICE PAPER+DATASET/walksSAT.p', 'wb'))
+    os.remove('CODICE PAPER+DATASET/walksSAT/' + f)
 
 # Generate context embeddings
 
 from gensim.models.word2vec import Word2Vec
-from gensim.models.poincare import PoincareModel, PoincareRelations
-from gensim.models.callbacks import CallbackAny2Vec
 import time as time
 
 
