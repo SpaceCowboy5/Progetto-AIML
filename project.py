@@ -406,13 +406,32 @@ for f in files[1:]:
 # Generate context embeddings
 
 from gensim.models.word2vec import Word2Vec
+from gensim.models.callbacks import CallbackAny2Vec
 import time as time
+
+
+class EpochLogger(CallbackAny2Vec):
+    # Callback to log information about training
+
+    def __init__(self):
+        self.epoch = 0
+
+    def on_epoch_begin(self, model):
+        print("Epoch #{} start".format(self.epoch))
+
+    def on_epoch_end(self, model):
+        print("Epoch #{} end".format(self.epoch))
+        self.epoch += 1
+
+
+epoch_logger = EpochLogger()
 
 
 def EmbedWord2Vec(walks, dimension):
     time_start = time.time()
     print("Creating embeddings.")
-    model = Word2Vec(walks, vector_size=dimension, window=5, min_count=0, sg=1, workers=16, epochs=20)
+    model = Word2Vec(walks, vector_size=dimension, window=5, min_count=0, sg=1, workers=16, epochs=20,
+                     callbacks=[epoch_logger])
     node_ids = model.wv.index2word
     node_embeddings = model.wv.vectors
     print("Embedding generation runtime: ", time.time() - time_start)
